@@ -3,6 +3,7 @@ name: Deploy service, generate certificates, and update NGINX configuration
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   call-reusable:
