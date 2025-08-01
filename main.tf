@@ -19,7 +19,7 @@ resource "random_password" "ddns_password" {
 }
 
 resource "allinkl_ddns" "ttrss" {
-    dyndns_comment   = "TTRSS NEW (not old)"
+    dyndns_comment   = "ttrss new NOT OLD"
     dyndns_password  = random_password.ddns_password.result
     dyndns_zone      = "mahn.ke"
     dyndns_label     = "ttrssold.by.vincent"
