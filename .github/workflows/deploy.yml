@@ -6,6 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-reusable:
+  deploy:
     uses: mahn-ke/.github/.github/workflows/deploy.yml@main
     secrets: inherit

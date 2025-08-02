@@ -1,0 +1,3 @@
+[submodule "plugins.local/auth_oidc"]
+	path = plugins.local/auth_oidc
+	url = https://gitlab.tt-rss.org/tt-rss/plugins/ttrss-auth-oidc.git

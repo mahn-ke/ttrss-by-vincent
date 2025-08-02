@@ -2,6 +2,14 @@
 version: '3'
 
 services:
+  init-volume:
+    image: busybox
+    volumes:
+      - plugins-volume:/data
+      - ./plugins.local:/plugins.local:ro
+    entrypoint: ["sh", "-c", "cp -r /plugins.local/. /data/"]
+    restart: "no"
+
   db:
     image: postgres:15-alpine
     restart: unless-stopped
@@ -70,7 +78,9 @@ services:
       - 8281:80
     volumes:
       - app:/var/www/html
+      - plugins-volume:/var/www/html/tt-rss/plugins.local
     depends_on:
+      - init-volume
       - app
 
 volumes:
@@ -78,3 +88,4 @@ volumes:
   db:
   app:
   backups:
+  plugins-volume:
