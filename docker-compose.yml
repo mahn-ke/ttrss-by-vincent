@@ -31,6 +31,7 @@ services:
     restart: unless-stopped
     volumes:
       - app:/var/www/html
+      - plugins-volume:/var/www/html/tt-rss/plugins.local
       - config:/opt/tt-rss/config.d:ro
     depends_on:
       - db
@@ -50,6 +51,7 @@ services:
     restart: unless-stopped
     volumes:
       - app:/var/www/html
+      - plugins-volume:/var/www/html/tt-rss/plugins.local
       - config:/opt/tt-rss/config.d:ro
     depends_on:
       - app
@@ -82,7 +84,6 @@ services:
       - 8281:80
     volumes:
       - app:/var/www/html
-      - plugins-volume:/var/www/html/tt-rss/plugins.local
     depends_on:
       - init-volume
       - app
