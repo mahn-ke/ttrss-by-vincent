@@ -20,3 +20,7 @@ provider "allinkl" {
 provider "keycloak" {
     url           = "https://sso.by.vincent.mahn.ke"
 }
+
+data "keycloak_realm" "sso_by_vincent_mahn_ke" {
+  realm = "sso.by.vincent.mahn.ke"
+}
