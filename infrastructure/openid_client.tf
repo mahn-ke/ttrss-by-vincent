@@ -1,17 +1,17 @@
-data "keycloak_realm" "sso_by_vincent_mahn_ke" {
-  realm = "sso.by.vincent.mahn.ke"
+locals {
+  subdomain_label = replace(replace(basename(dirname(path.cwd)), "-by-vincent", ""), "-", ".")
 }
 
 resource "keycloak_openid_client" "openid_client" {
   realm_id            = data.keycloak_realm.sso_by_vincent_mahn_ke.id
-  client_id           = "ttrss"
+  client_id           = "${local.subdomain_label}"
 
-  name                = "Tiny Tiny RSS"
+  name                = "${local.subdomain_label}"
   enabled             = true
 
   access_type         = "CONFIDENTIAL"
   valid_redirect_uris = [
-    "https://ttrss.by.vincent.mahn.ke/*"
+    "https://${local.subdomain_label}.by.vincent.mahn.ke/*"
   ]
   use_refresh_tokens  = false
 }
