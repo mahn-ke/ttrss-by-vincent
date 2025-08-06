@@ -16,3 +16,7 @@ terraform {
 provider "allinkl" {
     kas_auth_type = "plain"
 }
+
+provider "keycloak" {
+    url           = "https://sso.by.vincent.mahn.ke"
+}
