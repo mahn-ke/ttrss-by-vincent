@@ -8,7 +8,7 @@ locals {
 }
 
 resource "allinkl_ddns" "subdomain" {
-  dyndns_comment   = local.subdomain_label
+  dyndns_comment   = replace(local.subdomain_label, ".", "_")
   dyndns_password  = random_password.ddns_password.result
   dyndns_zone      = "mahn.ke"
   dyndns_label     = "${local.subdomain_label}.by.vincent"
