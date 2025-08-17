@@ -1,4 +1,4 @@
-name: Integrate `autoupdate` branches using rebase
+name: Integrate `automerge` branches using rebase
 on:
   workflow_dispatch:
   workflow_run:
@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  autoupdate:
+  automerge:
     runs-on: ubuntu-latest
     steps:
       - id: automerge
@@ -16,7 +16,7 @@ jobs:
         uses: "pascalgn/automerge-action@v0.16.4"
         env:
           GITHUB_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-          MERGE_LABELS: "autoupdate"
+          MERGE_LABELS: "automerge"
           MERGE_METHOD: "rebase"
           UPDATE_METHOD: "rebase"
           UPDATE_RETRIES : 10
