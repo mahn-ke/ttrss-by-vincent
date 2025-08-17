@@ -5,7 +5,7 @@
 terraform {
   backend "pg" {
   }
-  required_providers {
+  required_p roviders {
     allinkl = {
       source  = "ViMaSter/allinkl"
       version = "0.1.2"
