@@ -3,4 +3,4 @@
 	url = https://gitlab.tt-rss.org/tt-rss/plugins/ttrss-auth-oidc.git
 [submodule "plugins.local/gotify_notifications"]
 	path = plugins.local/gotify_notifications
-	url = https://github.com/VerifiedJoseph/ttrss-plugin-gotify
+	url = https://github.com/ViMaSter/ttrss-plugin-gotify
