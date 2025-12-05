@@ -11,7 +11,7 @@ services:
     restart: "no"
 
   db:
-    image: postgres:17.7-alpine
+    image: postgres:18.1-alpine
     restart: unless-stopped
     environment:
       - POSTGRES_USER=${TTRSS_DB_USER}
