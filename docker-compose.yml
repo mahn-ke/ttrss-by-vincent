@@ -28,7 +28,7 @@ services:
       - db:/var/lib/postgresql/data
 
   app:
-    image: cthulhoo/ttrss-fpm-pgsql-static:latest
+    image: supahgreg/ttrss-fpm-pgsql-static:latest
     restart: unless-stopped
     volumes:
       - app:/var/www/html
@@ -48,7 +48,7 @@ services:
       - ADMIN_USER_PASS=${ADMIN_USER_PASS}
 
   updater:
-    image: cthulhoo/ttrss-fpm-pgsql-static:latest
+    image: supahgreg/ttrss-fpm-pgsql-static:latest
     restart: unless-stopped
     volumes:
       - app:/var/www/html
@@ -69,7 +69,7 @@ services:
     command: /opt/tt-rss/updater.sh
 
   web-nginx:
-    image: cthulhoo/ttrss-web-nginx:latest
+    image: supahgreg/ttrss-web-nginx:latest
     restart: unless-stopped
     environment:
       - TTRSS_DB_USER=${TTRSS_DB_USER}
