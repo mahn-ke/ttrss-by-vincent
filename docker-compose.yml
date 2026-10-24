@@ -3,10 +3,9 @@ version: '3'
 
 services:
   init-volume:
-    image: busybox
+    image: ghcr.io/mahn-ke/ttrss-by-vincent/plugins:latest
     volumes:
       - plugins-volume:/data
-      - ./plugins.local:/plugins.local:ro
     entrypoint: ["sh", "-c", "cp -r /plugins.local/. /data/"]
     restart: "no"
 
@@ -34,7 +33,10 @@ services:
       - app:/var/www/html
       - plugins-volume:/var/www/html/tt-rss/plugins.local
     depends_on:
-      - db
+      db:
+        condition: service_started
+      init-volume:
+        condition: service_completed_successfully
     environment:
       - TTRSS_DB_USER=${TTRSS_DB_USER}
       - TTRSS_DB_PASS=${TTRSS_DB_PASS}
