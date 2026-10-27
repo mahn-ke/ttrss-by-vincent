@@ -1,0 +1,112 @@
+diff --git a/init.php b/init.php
+index 7c15eff..10f9ad6 100644
+--- a/init.php
++++ b/init.php
+@@ -16,6 +16,8 @@ class gotify_notifications extends Plugin {
+ 	private array $feed_tokens;
+ 	private array $feed_priorities;
+ 
++	private const SNOOZE_DAYS = [1, 2, 7, 14, 30];
++
+ 	private $priorityLevels = [
+ 		'-1' => 'Global default',
+ 		'0' => 'Minimum',
+@@ -221,6 +223,20 @@ class gotify_notifications extends Plugin {
+ 			$options
+ 		);
+ 
++		$snoozes = $this->get_stored_array('feed_snoozes');
++		$until = $snoozes[$feed_id] ?? 0;
++		$snoozeStatus = $until > time()
++			? 'Notifications snoozed until ' . gmdate('Y-m-d H:i:s', $until) . ' UTC.'
++			: 'Notifications are not snoozed.';
++		$snoozeOptions = [
++			'keep' => 'Keep current snooze',
++			'resume' => 'Resume now (clear snooze)'
++		];
++		foreach (self::SNOOZE_DAYS as $days) {
++			$snoozeOptions[$days] = $days === 1 ? 'Snooze for 1 day' : "Snooze for {$days} days";
++		}
++		$snoozeInputTag = $this->select_tag('gotify_snooze', 'keep', $snoozeOptions);
++
+ 		print <<<HTML
+ 			<header>Gotify Notifications</header>
+ 			<section>
+@@ -236,12 +252,28 @@ class gotify_notifications extends Plugin {
+ 					<label>Message priority:</label>
+ 					{$priorityInputTag} <span title="Set priority level specifically for this feed.">[?]</span>
+ 				</fieldset>
++				<fieldset>
++					<label>Snooze notifications:</label>
++					{$snoozeInputTag}
++					<p>{$snoozeStatus}</p>
++					<p>Applies to feed and filter notifications. Feed updates continue.
++					Notifications resume automatically; skipped notifications are not replayed.
++					Save the feed to apply your selection.</p>
++				</fieldset>
+ 			</section>
+ 		HTML;
+ 	}
+ 
+ 	function hook_prefs_save_feed($feed_id)
+ 	{
++		$snooze = $_POST['gotify_snooze'] ?? 'keep';
++		$allowedSnoozes = array_merge(['keep', 'resume'], array_map('strval', self::SNOOZE_DAYS));
++		if (!in_array($snooze, $allowedSnoozes, true)) {
++			$message = 'Invalid Gotify snooze duration.';
++			Logger::log(E_USER_WARNING, $message);
++			throw new InvalidArgumentException($message);
++		}
++
+ 		$enable_key = array_search($feed_id, $this->enabled_feeds);
+ 
+ 		$enabled = checkbox_to_sql_bool($_POST['gotify_enabled'] ?? '');
+@@ -277,6 +309,26 @@ class gotify_notifications extends Plugin {
+ 		$this->host->set($this, 'enabled_feeds', $this->enabled_feeds);
+ 		$this->host->set($this, 'app_tokens', $this->feed_tokens);
+ 		$this->host->set($this, 'feed_priorities', $this->feed_priorities);
++		if ($snooze !== 'keep') {
++			$snoozes = $this->get_stored_array('feed_snoozes');
++			if ($snooze === 'resume') {
++				unset($snoozes[$feed_id]);
++			} else {
++				$snoozes[$feed_id] = time() + (int) $snooze * 86400;
++			}
++			$this->host->set($this, 'feed_snoozes', $snoozes);
++		}
++	}
++
++	private function isFeedSnoozed($feed_id): bool
++	{
++		$snoozes = $this->get_stored_array('feed_snoozes');
++		if (($snoozes[$feed_id] ?? 0) > time()) {
++			Debug::log('[Gotify] Notifications snoozed for this feed.');
++			return true;
++		}
++
++		return false;
+ 	}
+ 
+ 	private function get_stored_array($name)
+@@ -291,6 +343,10 @@ class gotify_notifications extends Plugin {
+ 	public function hook_article_filter_action($article, $action) {
+ 		$feed_id = $article['feed']['id'];
+ 
++		if ($this->isFeedSnoozed($feed_id)) {
++			return;
++		}
++
+ 		$token = $this->getFeedToken($feed_id);
+ 		$priority = $this->getFeedPriority($feed_id);
+ 
+@@ -318,6 +374,10 @@ class gotify_notifications extends Plugin {
+ 	{
+ 		$feed_id = $article['feed']['id'];
+ 
++		if ($this->isFeedSnoozed($feed_id)) {
++			return;
++		}
++
+ 		try {
+ 			if (in_array($feed_id, $this->enabled_feeds) === false) {
+ 				throw new Exception('Gotify not enabled for this feed.');

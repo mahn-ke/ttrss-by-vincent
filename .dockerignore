@@ -2,4 +2,6 @@
 !Dockerfile.plugins
 !plugins.local/
 !plugins.local/**
+!patches/
+!patches/gotify-snooze.patch
 **/.git

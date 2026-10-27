@@ -1,2 +1,6 @@
 FROM busybox:latest
 COPY plugins.local/ /plugins.local/
+COPY patches/gotify-snooze.patch /tmp/gotify-snooze.patch
+RUN cd /plugins.local/gotify_notifications \
+    && patch -p1 < /tmp/gotify-snooze.patch \
+    && rm /tmp/gotify-snooze.patch
